@@ -149,7 +149,8 @@ v3를 빌드하자 버킷의 Vulnerabilities 탭에 바로 결과가 떴다.
 - Critical 0, High 10, Medium 13.
 - 가장 취약한 패키지: `openssl 3.0.13`, `util-linux 2.39.3`.
 - 영향받는 채널: `latest`.
-- `GO-2026-*` 항목은 Ubuntu 패키지에는 Go 바이너리가 없으니, `/`를 스캔하는 순간 `/usr/local/bin/syft` 자신이 SBOM에 들어간 것으로 보인다.
+- `GO-2026-*` 항목은 syft 자신 때문이다. `/`를 스캔하는 순간 `/usr/local/bin/syft`가 SBOM에 들어갔다.
+  이미지 안 `/tmp/sbom.spdx.json`을 열어 보니 `github.com/anchore/syft`와 그 Go 의존성들이 그대로 있었다.
   실제로 쓸 때는 `--exclude ./usr/local/bin/syft`를 주거나 syft를 이미지 밖에서 돌려야 한다.
 
 이미지 하나당 CVE 현황을 채널 단위로 보여 주니, "프로덕션 채널에 High가 몇 개 있나"를 바로 알 수 있다.
