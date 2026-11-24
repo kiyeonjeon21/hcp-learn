@@ -1,0 +1,9 @@
+{
+  "scheme": "workload",
+  "workload": {
+    "provider_resource_name": "iam/project/6469d292-358c-4743-986f-92e6688c6ec8/service-principal/gha-viewer/workload-identity-provider/github-hcp-learn",
+    "env": {
+      "var": "GH_OIDC_TOKEN"
+    }
+  }
+}

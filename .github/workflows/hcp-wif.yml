@@ -1,0 +1,57 @@
+name: HCP via Workload Identity Federation
+
+# Authenticates to HCP with the GitHub Actions OIDC token. No HCP secret is stored in GitHub.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [".github/workflows/hcp-wif.yml", "hcp/gha-wif-cred.json"]
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  read-packer-channel:
+    runs-on: ubuntu-latest
+    env:
+      WIP: iam/project/6469d292-358c-4743-986f-92e6688c6ec8/service-principal/gha-viewer/workload-identity-provider/github-hcp-learn
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install hcp CLI
+        run: |
+          v=$(curl -s https://api.releases.hashicorp.com/v1/releases/hcp/latest | jq -r .version)
+          curl -sSLO "https://releases.hashicorp.com/hcp/${v}/hcp_${v}_linux_amd64.zip"
+          unzip -q "hcp_${v}_linux_amd64.zip" hcp && sudo mv hcp /usr/local/bin/
+          hcp version
+
+      - name: Get GitHub OIDC token (audience = WIF provider resource name)
+        run: |
+          tok=$(curl -sSf -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=$WIP" | jq -r .value)
+          echo "::add-mask::$tok"
+          echo "GH_OIDC_TOKEN=$tok" >> "$GITHUB_ENV"
+
+      - name: Exchange for an HCP access token
+        run: |
+          hcp auth login --cred-file=hcp/gha-wif-cred.json
+          hcp auth print-access-token | cut -d. -f2 | base64 -d 2>/dev/null | jq '{sub, "type": ."https://cloud.hashicorp.com/principal-type"}' || true
+
+      - name: Read the production image from HCP Packer (allowed by Viewer)
+        run: |
+          T=$(hcp auth print-access-token)
+          P=$(jq -r .project_id hcp/gha-wif-cred.json)
+          O=$(curl -s -H "Authorization: Bearer $T" "https://api.cloud.hashicorp.com/resource-manager/2019-12-10/projects/$P" | jq -r .project.parent.id)
+          curl -s -H "Authorization: Bearer $T" \
+            "https://api.cloud.hashicorp.com/packer/2023-01-01/organizations/$O/projects/$P/buckets/hcp-learn-base/channels/production" \
+            | jq '{channel: .channel.name, version: .channel.version.name, image: .channel.version.builds[0].artifacts[0].external_identifier}'
+
+      - name: Try to create a channel (denied for Viewer)
+        run: |
+          T=$(hcp auth print-access-token)
+          P=$(jq -r .project_id hcp/gha-wif-cred.json)
+          O=$(curl -s -H "Authorization: Bearer $T" "https://api.cloud.hashicorp.com/resource-manager/2019-12-10/projects/$P" | jq -r .project.parent.id)
+          curl -s -X POST -H "Authorization: Bearer $T" -H 'Content-Type: application/json' \
+            "https://api.cloud.hashicorp.com/packer/2023-01-01/organizations/$O/projects/$P/buckets/hcp-learn-base/channels" \
+            -d '{"name":"should-fail"}' | jq -c .
