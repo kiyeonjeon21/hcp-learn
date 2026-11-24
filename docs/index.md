@@ -16,3 +16,4 @@ HashiCorp Cloud Platform(HCP)의 서비스를 처음부터 끝까지 직접 써�
 2. [Vault Dedicated](01-vault-dedicated.md)
 3. [HCP Packer](02-packer.md)
 4. [HCP Terraform: 계정 연동부터 막히다](03-terraform-account.md)
+5. [HCP Boundary](04-boundary.md)

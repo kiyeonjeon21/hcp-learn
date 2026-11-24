@@ -3,3 +3,7 @@
 .terraform/
 *.pem
 secrets/
+boundary-worker/auth/
+boundary-worker/*.log
+*.tfvars
+boundary-worker/worker.hcl
