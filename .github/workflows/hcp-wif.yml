@@ -41,7 +41,7 @@ jobs:
       - name: Read the production image from HCP Packer (allowed by Viewer)
         run: |
           T=$(hcp auth print-access-token)
-          P=$(jq -r .project_id hcp/gha-wif-cred.json)
+          P=$(echo "$WIP" | cut -d/ -f3)
           O=$(curl -s -H "Authorization: Bearer $T" "https://api.cloud.hashicorp.com/resource-manager/2019-12-10/projects/$P" | jq -r .project.parent.id)
           curl -s -H "Authorization: Bearer $T" \
             "https://api.cloud.hashicorp.com/packer/2023-01-01/organizations/$O/projects/$P/buckets/hcp-learn-base/channels/production" \
@@ -50,7 +50,7 @@ jobs:
       - name: Try to create a channel (denied for Viewer)
         run: |
           T=$(hcp auth print-access-token)
-          P=$(jq -r .project_id hcp/gha-wif-cred.json)
+          P=$(echo "$WIP" | cut -d/ -f3)
           O=$(curl -s -H "Authorization: Bearer $T" "https://api.cloud.hashicorp.com/resource-manager/2019-12-10/projects/$P" | jq -r .project.parent.id)
           curl -s -X POST -H "Authorization: Bearer $T" -H 'Content-Type: application/json' \
             "https://api.cloud.hashicorp.com/packer/2023-01-01/organizations/$O/projects/$P/buckets/hcp-learn-base/channels" \
