@@ -14,3 +14,4 @@ HashiCorp Cloud Platform(HCP)의 서비스를 처음부터 끝까지 직접 써�
 
 1. [시작: 포털 둘러보기, 계정 상태, CLI 준비](00-portal.md)
 2. [Vault Dedicated](01-vault-dedicated.md)
+3. [HCP Packer](02-packer.md)
