@@ -22,8 +22,8 @@ jobs:
       - name: Install hcp CLI
         run: |
           v=$(curl -s https://api.releases.hashicorp.com/v1/releases/hcp/latest | jq -r .version)
-          curl -sSLO "https://releases.hashicorp.com/hcp/${v}/hcp_${v}_linux_amd64.zip"
-          unzip -q "hcp_${v}_linux_amd64.zip" hcp && sudo mv hcp /usr/local/bin/
+          curl -sSL -o "$RUNNER_TEMP/hcp.zip" "https://releases.hashicorp.com/hcp/${v}/hcp_${v}_linux_amd64.zip"
+          sudo unzip -oq "$RUNNER_TEMP/hcp.zip" hcp -d /usr/local/bin
           hcp version
 
       - name: Get GitHub OIDC token (audience = WIF provider resource name)
