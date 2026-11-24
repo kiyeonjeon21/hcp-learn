@@ -101,3 +101,46 @@ CLI 결과는 HCP로 올라가서 포털에도 바로 보인다.
 
 Events 화면 상단에 "Link secret manager" 버튼이 있다.
 Vault 같은 시크릿 매니저를 연결하면 "이 유출된 값이 이미 Vault에 관리되는 값인가"를 표시해 준다.
+
+## GitHub 연동 (HCP Vault Radar Scan)
+
+1. Settings → Data sources → HCP Vault Radar Scan → GitHub Cloud.
+2. 인증 방식: Access token(PAT) 또는 GitHub OAuth. OAuth를 고르고 "Connect to GitHub".
+3. GitHub에서 **HashiCorp Vault Radar Checks App** 설치 화면이 뜬다.
+  "Only select repositories"로 `hcp-learn`만 허용했다.
+4. 돌아오면 "Authenticated with GitHub" → Next → 모니터링할 저장소 선택 → Finish.
+
+Trial은 데이터 소스당 저장소 50개까지다.
+"All active repositories"(앞으로 생길 저장소까지 자동 포함)는 Essentials 전용이라 비활성화돼 있다.
+등록하면 Resources에 `hcp-learn`(Git Repo)이 "In scanning queue..."로 올라온다.
+
+## PR checks
+
+Settings → PR checks 기본 정책:
+
+| Check | Policy |
+| --- | --- |
+| Secrets | Fail if any secrets are found in latest version |
+
+GitHub App 인증으로 연결된 저장소에만 동작한다.
+
+테스트로 AWS 문서 예제 키 ID(`AKIAIOSFODNN7EXAMPLE`) 한 줄만 넣은 PR을 열었다.
+이 값은 로컬 pre-commit 훅은 통과했다 (기준 심각도 미만).
+
+13초 만에 체크가 붙었다.
+
+```
+HashiCorp Vault Radar Secret Scan   fail
+Failed: Secrets Found at Tip of Branch
+```
+
+| Status | Severity | Activeness | Description | Reason | File Path |
+| --- | --- | --- | --- | --- | --- |
+| ❌ | Info | Unknown | AWS access key ID | Found at tip of branch | sandbox/radar-pr-test.md#L6 |
+
+- 해당 줄에 `Secret Found` failure 어노테이션도 달린다.
+- CLI 스캔에서는 info로 분류된 예제 키인데, PR 정책이 "any secrets"라 그대로 실패시킨다.
+  심각도 필터는 따로 걸어야 한다.
+- 로컬 훅(심각도 medium 이상 차단)과 PR 체크(모든 시크릿 차단)의 기준이 달라서, 로컬을 통과해도 PR에서 막힐 수 있다.
+
+PR은 병합하지 않고 닫았다.
