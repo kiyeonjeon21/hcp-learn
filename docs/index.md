@@ -20,3 +20,4 @@ HashiCorp Cloud Platform(HCP)의 서비스를 처음부터 끝까지 직접 써�
 6. [HCP IAM과 Workload Identity Federation](05-iam-wif.md)
 7. [HCP Vagrant Registry: 이미 지는 서비스](06-vagrant.md)
 8. [Waypoint, Infragraph, HVN: Terraform과 AWS에 묶인 것들](07-waypoint-infragraph-hvn.md)
+9. [HCP Vault Radar](08-vault-radar.md)
