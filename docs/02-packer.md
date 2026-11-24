@@ -51,7 +51,8 @@ packer init . && packer build -var version_label=v1 .
 용어 정리:
 
 - **Bucket**: 이미지 한 종류 (`hcp-learn-base`).
-- **Version**: `packer build` 한 번의 결과. fingerprint로 식별한다. git 저장소 안이면 커밋 해시를 쓰고, 아니면 ULID를 자동 생성한다.
+- **Version**: `packer build` 한 번의 결과. fingerprint로 식별한다.
+  git 저장소 안이면 커밋 해시를 쓰고, 아니면 ULID를 자동 생성한다.
 - **Build / Artifact**: 버전 안의 플랫폼별 결과물. Docker면 platform/region이 둘 다 `docker`이고 identifier는 이미지 sha256이다.
 - **Channel**: 특정 버전을 가리키는 이름표. `latest`는 자동으로 생긴다.
 
@@ -149,7 +150,8 @@ v3를 빌드하자 버킷의 Vulnerabilities 탭에 바로 결과가 떴다.
 - Critical 0, High 10, Medium 13.
 - 가장 취약한 패키지: `openssl 3.0.13`, `util-linux 2.39.3`.
 - 영향받는 채널: `latest`.
-- `GO-2026-*` 항목은 syft 자신 때문이다. `/`를 스캔하는 순간 `/usr/local/bin/syft`가 SBOM에 들어갔다.
+- `GO-2026-*` 항목은 syft 자신 때문이다.
+  `/`를 스캔하는 순간 `/usr/local/bin/syft`가 SBOM에 들어갔다.
   이미지 안 `/tmp/sbom.spdx.json`을 열어 보니 `github.com/anchore/syft`와 그 Go 의존성들이 그대로 있었다.
   실제로 쓸 때는 `--exclude ./usr/local/bin/syft`를 주거나 syft를 이미지 밖에서 돌려야 한다.
 
@@ -157,6 +159,7 @@ v3를 빌드하자 버킷의 Vulnerabilities 탭에 바로 결과가 떴다.
 
 ## 느낀 점
 
-- 레지스트리 자체는 무료 티어로도 충분히 쓸 만하다. 채널 + 폐기 + Terraform 데이터 소스 조합이 핵심이다.
+- 레지스트리 자체는 무료 티어로도 충분히 쓸 만하다.
+  채널 + 폐기 + Terraform 데이터 소스 조합이 핵심이다.
 - 빌드 결과물은 그대로 내 클라우드/로컬에 있고, HCP에는 메타데이터만 올라간다.
 - SBOM, 취약점, 예약 폐기 같은 거버넌스 기능은 Standard 티어부터다.

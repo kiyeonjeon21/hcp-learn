@@ -20,7 +20,8 @@ HCP가 운영해 주는 Vault Enterprise 클러스터다.
 Edit configuration에서 본 가격:
 
 - Development / Extra Small: **$0.61644/hr, 월 약 $450**, 2 vCPU, 1 GiB RAM, 클라이언트 25개까지.
-- Trial 크레딧 $500이면 이 클러스터 하나로 한 달이 안 간다. 실험이 끝나면 지워야 한다.
+- Trial 크레딧 $500이면 이 클러스터 하나로 한 달이 안 간다.
+  실험이 끝나면 지워야 한다.
 - 옵션: Reporting (Beta, 시크릿/인증서 메타데이터 인벤토리), Port 443 사용.
 
 ## admin 토큰과 CLI 접속
@@ -147,6 +148,7 @@ HCP Vault의 과금 단위인 "client"가 바로 이 entity 수라서, Dev 티�
 
 ## 느낀 점
 
-- 운영(언실, 스토리지, 백업, 업그레이드)은 신경 쓸 게 없다. CLI로 붙으면 그냥 Vault Enterprise다.
+- 운영(언실, 스토리지, 백업, 업그레이드)은 신경 쓸 게 없다.
+  CLI로 붙으면 그냥 Vault Enterprise다.
 - 차이는 `admin` 네임스페이스부터 시작한다는 것과 root 토큰 대신 6시간짜리 admin 토큰을 쓴다는 것.
 - 가장 싼 Dev 티어도 월 $450 수준이라 개인 학습용으로는 꽤 비싸다.
